@@ -14,8 +14,8 @@ __global__ void dequantize_int4_with_zero_point_per_group_kernel(
     at::Half* buffer                        
 )
 {
-    int group_idx = blockIdx.x;
-    
+    size_t group_idx = blockIdx.x;
+
     int group_size_packed = group_size / 2;
     
     int thread_idx = threadIdx.x;
@@ -46,17 +46,28 @@ void dequantize_int4_with_zero_point_per_group(
     torch::Tensor scale,          
     torch::Tensor zero_point,     
     int group_size,               
-    torch::Tensor buffer,          
+    torch::Tensor buffer,         
     int N
 ) {
     int thread_per_group = 8;
-    dequantize_int4_with_zero_point_per_group_kernel<<<N, thread_per_group>>>(
-        q_packed.data_ptr<uint8_t>(),
-        scale.data_ptr<at::Half>(),
-        zero_point.data_ptr<at::Half>(),
-        group_size,
-        buffer.data_ptr<at::Half>()
-    );
+    const int max_blocks = 1048576;
+
+    int chunks = (N + max_blocks - 1) / max_blocks;
+
+    for (int chunk_idx = 0; chunk_idx < chunks; ++chunk_idx) {
+        int start_group = chunk_idx * max_blocks;
+        int end_group = min(start_group + max_blocks, N);
+        
+        int num_groups = end_group - start_group;
+
+        dequantize_int4_with_zero_point_per_group_kernel<<<num_groups, thread_per_group>>>(
+            q_packed.data_ptr<uint8_t>() + (size_t)start_group * (group_size / 2),
+            scale.data_ptr<at::Half>() + start_group,
+            zero_point.data_ptr<at::Half>() + start_group,
+            group_size,
+            buffer.data_ptr<at::Half>() + (size_t)start_group * group_size
+        );
+    }
 }
 
 __global__ void quantize_int4_with_zero_point_per_group_kernel(
