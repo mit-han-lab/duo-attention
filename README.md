@@ -6,7 +6,7 @@
 
 ## Demo
 
-https://github.com/user-attachments/assets/3319fe18-5917-4406-8abb-ac994975e994
+https://github.com/user-attachments/assets/12436a3b-726f-4b33-b312-54e9e121e0b1
 
 ## TL;DR
 We significantly reduce both pre-filling and decoding memory and latency for long-context LLMs without sacrificing their long-context abilities.
