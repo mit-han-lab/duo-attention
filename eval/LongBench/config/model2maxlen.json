@@ -1,0 +1,7 @@
+{
+    "Mistral-7B-Instruct-v0.2": 31500,
+    "Mistral-7B-Instruct-v0.3": 31500,
+    "Llama-3-8B-Instruct-Gradient-1048k": 1047500,
+    "Llama-2-7B-32K-Instruct": 31500,
+    "Meta-Llama-3.1-8B-Instruct": 127500
+}
