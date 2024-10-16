@@ -1,8 +1,12 @@
 # DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads
-[[paper](https://arxiv.org/abs/2410.10819)][[demo]()]
+[[paper](https://arxiv.org/abs/2410.10819)]
 
 ![method1](figures/method1.jpg)
 ![method2](figures/method2.jpg)
+
+## Demo
+
+https://github.com/user-attachments/assets/b372882b-bf14-4c89-a610-22724d91a415
 
 ## TL;DR
 We significantly reduce both pre-filling and decoding memory and latency for long-context LLMs without sacrificing their long-context abilities.
