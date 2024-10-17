@@ -232,7 +232,7 @@ def llama_duo_attention_forward_one_way_reordered(
             dropout_p=0.0,
         )
     else:
-        # decoding or continous filling
+        # decoding or continuous filling
         if self.num_full_attn_head > 0:
             full_query_states = query_states[:, :, : self.num_full_query_head, :]
 
@@ -372,7 +372,7 @@ def llama_duo_attention_forward_one_way_reordered_static(
         )
 
     else:
-        # Decoding or continous filling
+        # Decoding or continuous filling
         num_full_query_head = (
             kv_cache.num_full_kv_head_list[layer_idx] * self.num_key_value_groups
         )
