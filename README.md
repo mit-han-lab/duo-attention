@@ -142,8 +142,8 @@ attn_heads, sparsity = sparsify_attention_heads(attn_heads, sparsity=0.5)
 enable_duo_attention_eval(
     model,
     attn_heads,
-    num_recent_tokens=64,
-    num_sink_tokens=256,
+    sink_size=64,
+    recent_size=256,
 )
 
 # Move model to GPU
