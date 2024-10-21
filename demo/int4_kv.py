@@ -90,42 +90,6 @@ def quantize_int4_with_zero_point_per_group(
     return q_packed, scale, zero_point
 
 
-@triton.jit
-def dequantize_kernel(
-    q_packed_ptr,
-    scale_ptr,
-    zero_point_ptr,
-    output_ptr,
-    group_size_packed: tl.constexpr,
-    group_size: tl.constexpr,
-    group_per_thread: tl.constexpr,
-):
-    pid = tl.program_id(0)
-
-    for row in range(pid * group_per_thread, (pid + 1) * group_per_thread):
-        q_packed_row_ptr = q_packed_ptr + row * group_size_packed
-        output_row_ptr = output_ptr + row * group_size
-
-        idx = tl.arange(0, group_size)
-        byte_idx = idx // 2
-        is_high = (idx % 2) == 0
-
-        byte_ptrs = q_packed_row_ptr + byte_idx
-
-        byte_vals = tl.load(byte_ptrs)
-
-        dequant_val = tl.where(is_high, (byte_vals >> 4) & 0x0F, byte_vals & 0x0F).to(
-            tl.float16
-        )
-
-        scale = tl.load(scale_ptr + row)
-        zero_point = tl.load(zero_point_ptr + row)
-
-        val = dequant_val * scale + zero_point
-
-        tl.store(output_row_ptr + idx, val)
-
-
 def dequantize_int4_with_zero_point_per_group(
     q_packed, scale, zero_point, head_dim, group_size, buffer
 ):
@@ -140,17 +104,6 @@ def dequantize_int4_with_zero_point_per_group(
     N = q_packed.shape[0]
 
     output = buffer[: N * group_size].view(N, group_size)
-
-    # grid = (N // 4,)
-    # dequantize_kernel[grid](
-    #     q_packed,
-    #     scale.view(-1),
-    #     zero_point.view(-1),
-    #     output,
-    #     group_size_packed,
-    #     group_size,
-    #     4
-    # )
 
     module.dequantize_int4_with_zero_point_per_group(
         q_packed, scale, zero_point, group_size, buffer, N
