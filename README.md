@@ -52,7 +52,7 @@ pip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.4/
 pip install -e .
 
 # Install Block Sparse Streaming Attention
-git clone git@github.com:mit-han-lab/Block-Sparse-Attention.git
+git clone https://github.com:mit-han-lab/Block-Sparse-Attention
 cd Block-Sparse-Attention
 python setup.py install
 ```
@@ -71,7 +71,7 @@ conda install -y nvidia/label/cuda-12.4.0::cuda-toolkit
 conda install -y nvidia::cuda-cudart-dev
 
 # Install QServe
-git clone git@github.com:mit-han-lab/qserve.git
+git clone https://github.com:mit-han-lab/qserve
 cd qserve
 pip install -e .
 pip install ninja packaging
