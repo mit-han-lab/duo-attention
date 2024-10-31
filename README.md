@@ -1,5 +1,5 @@
 # DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads
-[[paper](https://arxiv.org/abs/2410.10819)]
+[[paper](https://arxiv.org/abs/2410.10819)] [[slides](figures/DuoAttention.pdf)]
 
 ![method1](figures/method1.jpg)
 ![method2](figures/method2.jpg)
