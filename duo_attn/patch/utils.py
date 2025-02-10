@@ -24,6 +24,13 @@ def reorder_linear_weights(
         weight2 = linear_module.weight.data[~full_attn_mask, :]
         reordered_weight = torch.cat([weight1, weight2], dim=0)
     linear_module.weight.data = reordered_weight
+    # for linear modules with bias
+    if linear_module.bias is not None:
+        bias1 = linear_module.bias.data[full_attn_mask]
+        bias2 = linear_module.bias.data[~full_attn_mask]
+        reordered_bias = torch.cat([bias1, bias2], dim=0)
+        linear_module.bias.data = reordered_bias
+
     return linear_module
 
 
