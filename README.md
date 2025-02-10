@@ -52,7 +52,7 @@ pip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.4/
 pip install -e .
 
 # Install Block Sparse Streaming Attention
-git clone https://github.com:mit-han-lab/Block-Sparse-Attention
+git clone https://github.com/mit-han-lab/Block-Sparse-Attention
 cd Block-Sparse-Attention
 python setup.py install
 ```
