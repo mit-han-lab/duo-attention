@@ -31,6 +31,7 @@ def enable_duo_attention_training(
     print(
         f"Enabling DuoAttention training using {streaming_attn_implementation} imlementation"
     )
+    assert not (torch.version.hip and streaming_attn_implementation == "blocksparse"), "block sparse cuda kernel does not run on rocm yet"
     if "llama" in model.config.model_type:
         enable_llama_duo_attention_training(
             model,

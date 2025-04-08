@@ -277,7 +277,7 @@ def main(args):
         args.max_length,
         initial_value=args.initial_value,
         enable_ulysses_attention=True,
-        streaming_attn_implementation=args.streaming_attn_implementation,
+        streaming_attn_implementation="sdpa" if torch.version.hip else args.streaming_attn_implementation, # block sparse cuda kernel does not run on rocm yet,
     )
 
     model = model.model

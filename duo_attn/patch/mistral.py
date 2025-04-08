@@ -31,7 +31,12 @@ from .static_kv_cache import (
     enable_duo_attention_static_kv_cache_for_mistral,
 )
 from .tuple_kv_cache import enable_tuple_kv_cache_for_mistral
-from .flashinfer_utils import apply_rope_inplace, enable_flashinfer_rmsnorm
+
+try:
+    from .flashinfer_utils import apply_rope_inplace, enable_flashinfer_rmsnorm
+except:
+    apply_rope_inplace = None
+    enable_flashinfer_rmsnorm = None
 
 from tensor_parallel.pretrained_model import TensorParallelPreTrainedModel
 from flash_attn import flash_attn_func, flash_attn_with_kvcache
@@ -334,22 +339,22 @@ def mistral_duo_attention_forward_one_way_reordered_static(
         kv_seq_len += kv_cache.kv_seq_len
 
     # Replace the Huggingface's apply rotory pos emb with FlashInfer's rope
-
-    # cos, sin = self.rotary_emb(value_states, position_ids)
-    # query_states, key_states = apply_rotary_pos_emb(
-    #     query_states,
-    #     key_states,
-    #     cos,
-    #     sin,
-    #     unsqueeze_dim=2,  # unsqueeze_dim=2 for the flash attention
-    # )
-
-    rope_scale = 1.0
-    if self.config.rope_scaling is not None:
-        rope_scale = self.config.rope_scaling.get("factor", 1.0)
-    apply_rope_inplace(
-        query_states, key_states, position_ids[:, 0], rope_scale, self.rope_theta
-    )
+    if apply_rope_inplace:
+        rope_scale = 1.0
+        if self.config.rope_scaling is not None:
+            rope_scale = self.config.rope_scaling.get("factor", 1.0)
+        apply_rope_inplace(
+            query_states, key_states, position_ids[:, 0], rope_scale, self.rope_theta
+        )
+    else:
+        cos, sin = self.rotary_emb(value_states, position_ids)
+        query_states, key_states = apply_rotary_pos_emb(
+            query_states,
+            key_states,
+            cos,
+            sin,
+            unsqueeze_dim=2,  # unsqueeze_dim=2 for the flash attention
+        )
 
     (
         full_key_states,
@@ -559,7 +564,8 @@ def enable_mistral_duo_attention_static_kv_cache_eval(
     full_attention_heads,
 ):
     enable_duo_attention_static_kv_cache_for_mistral(model)
-    enable_flashinfer_rmsnorm(model)
+    if enable_flashinfer_rmsnorm:
+        enable_flashinfer_rmsnorm(model)
 
     device = next(model.parameters()).device
     dtype = next(model.parameters()).dtype
