@@ -71,7 +71,7 @@ conda install -y nvidia/label/cuda-12.4.0::cuda-toolkit
 conda install -y nvidia::cuda-cudart-dev
 
 # Install QServe
-git clone https://github.com:mit-han-lab/qserve
+git clone https://github.com/mit-han-lab/qserve
 cd qserve
 pip install -e .
 pip install ninja packaging
